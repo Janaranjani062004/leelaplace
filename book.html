@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Book — Leela Palace (Preview)</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 700px; margin: auto; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: 600; }
+    input { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; }
+    button { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+    .error { color: red; font-size: 0.9rem; margin-top: 5px; }
+    .invalid { border-color: red; }
+    #form-success { margin-top: 20px; padding: 10px; border-radius: 5px; background: #d4ffd4; border: 1px solid #5cb85c; }
+  </style>
+</head>
+<body>
+  <h1>Book a Stay</h1>
+  <form id="bookingForm" novalidate>
+    <div class="form-group">
+      <label for="name">Full name</label>
+      <input id="name" name="name" type="text" required />
+      <div class="error" id="err-name"></div>
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" required />
+      <div class="error" id="err-email"></div>
+    </div>
+    <div class="form-group">
+      <label for="phone">Phone</label>
+      <input id="phone" name="phone" type="tel" required />
+      <div class="error" id="err-phone"></div>
+    </div>
+    <div class="form-group">
+      <label for="checkin">Check-in date</label>
+      <input id="checkin" name="checkin" type="date" required />
+      <div class="error" id="err-checkin"></div>
+    </div>
+    <div class="form-group">
+      <label for="guests">Guests</label>
+      <input id="guests" name="guests" type="number" min="1" value="1" required />
+      <div class="error" id="err-guests"></div>
+    </div>
+    <button type="submit">Book now</button>
+    <div id="form-success" style="display:none;"></div>
+  </form>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('bookingForm');
+
+      const selectors = {
+        name: document.getElementById('name'),
+        email: document.getElementById('email'),
+        phone: document.getElementById('phone'),
+        checkin: document.getElementById('checkin'),
+        guests: document.getElementById('guests'),
+        success: document.getElementById('form-success')
+      };
+
+      const showError = (fieldId, message) => {
+        const err = document.getElementById('err-' + fieldId);
+        err.textContent = message;
+        if (message) selectors[fieldId].classList.add('invalid');
+        else selectors[fieldId].classList.remove('invalid');
+      };
+
+      const isFutureOrToday = (dateStr) => {
+        if (!dateStr) return false;
+        const selected = new Date(dateStr);
+        selected.setHours(0,0,0,0);
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        return selected >= today;
+      };
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        let valid = true;
+        selectors.success.style.display = 'none';
+        selectors.success.textContent = '';
+
+        if (!selectors.name.value.trim()) {
+          showError('name', 'Please enter your name.');
+          valid = false;
+        } else showError('name', '');
+
+        const emailVal = selectors.email.value.trim();
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailVal || !emailPattern.test(emailVal)) {
+          showError('email', 'Please enter a valid email.');
+          valid = false;
+        } else showError('email', '');
+
+        const phoneVal = selectors.phone.value.replace(/\s+/g,'');
+        if (!/^\d{7,15}$/.test(phoneVal)) {
+          showError('phone', 'Enter phone with 7–15 digits (numbers only).');
+          valid = false;
+        } else showError('phone', '');
+
+        const dateVal = selectors.checkin.value;
+        if (!isFutureOrToday(dateVal)) {
+          showError('checkin', 'Please choose today or a future date.');
+          valid = false;
+        } else showError('checkin', '');
+
+        const guestsVal = parseInt(selectors.guests.value, 10);
+        if (Number.isNaN(guestsVal) || guestsVal < 1) {
+          showError('guests', 'Please enter number of guests (at least 1).');
+          valid = false;
+        } else showError('guests', '');
+
+        if (!valid) {
+          const firstInvalid = form.querySelector('.invalid');
+          if (firstInvalid) firstInvalid.focus();
+          return;
+        }
+
+        selectors.success.style.display = 'block';
+        selectors.success.textContent = 'Form looks good — booking request submitted (demo).';
+      });
+    });
+  </script>
+</body>
+</html>
