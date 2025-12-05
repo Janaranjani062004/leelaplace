@@ -3,7 +3,7 @@
 
 	margin-top:100px;
 }
-.book-btn {
+.book-btn-warning {
     background-color: #f7a405; /* rich orange */
     color: #000;               /* black text, same as Leela */
     padding: 10px 22px;
@@ -14,7 +14,8 @@
     transition: 0.3s;
 }
 
-.book-btn:hover {
+.book-btn-warning:hover {
     background-color: #d68f04; /* darker orange on hover */
     color: #000;
 }
+
